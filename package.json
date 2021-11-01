@@ -1,6 +1,6 @@
 {
   "name": "avrora",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "license": "MIT",
@@ -9,9 +9,7 @@
     "start": "npm run storybook",
     "clean": "rimraf lib",
     "build": "npm run pretty && npm run clean && npm run compile",
-    "pretty": "prettier --config prettier.json --write \"src/**/*.ts*\"",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "pretty": "prettier --config prettier.json --write \"src/**/*.ts*\""
   },
   "dependencies": {
     "@material-ui/core": "^4.12.3",
@@ -21,10 +19,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",
-    "@storybook/addon-actions": "^6.3.8",
-    "@storybook/addon-essentials": "^6.3.8",
-    "@storybook/addon-links": "^6.3.8",
-    "@storybook/react": "^6.3.8",
     "@types/node": "^16.3.3",
     "@types/react": "^17.0.14",
     "@types/react-dom": "^17.0.9",
@@ -32,7 +26,6 @@
     "husky": "^7.0.1",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
-    "sb": "^6.3.8",
     "typescript": "^4.3.5"
   },
   "files": [
