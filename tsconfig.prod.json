@@ -4,9 +4,8 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "module": "commonjs",
+    "module": "esnext",
     "declaration": true,
-    "declarationMap": true,
     "esModuleInterop": true
   },
   "exclude": [
