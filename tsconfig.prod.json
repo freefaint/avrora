@@ -1,6 +1,9 @@
 {
   "extends": "./tsconfig.dev.json",
   "compilerOptions": {
+    "paths": {
+      "@/*": ["./*"]
+    },
     "module": "commonjs",
     "declaration": true,
     "declarationMap": true,

@@ -1,11 +1,10 @@
 {
   "name": "avrora",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "main": "lib/index.js",
-  "types": "lib/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "compile": "tsc --p tsconfig.prod.json",
+    "compile": "tsc --p tsconfig.prod.json && tscpaths -p tsconfig.prod.json -s ./src -o ./lib",
     "start": "npm run storybook",
     "clean": "rimraf lib",
     "build": "npm run pretty && npm run clean && npm run compile",
@@ -26,12 +25,11 @@
     "husky": "^7.0.1",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
+    "tscpaths": "^0.0.9",
     "typescript": "^4.3.5"
   },
   "files": [
     "lib",
-    "index.js",
-    "index.d.ts",
     "README.md"
   ],
   "repository": {
