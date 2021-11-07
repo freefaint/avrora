@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useMemo } from 'react';
-import { minMax } from '@/smart/math';
+import { minMax } from '@/smart';
 
 import { Area } from '@/components/board/area';
 
@@ -37,20 +37,22 @@ export const Board = ({ title, children }: React.PropsWithChildren<BoardProps>) 
     [scale],
   );
 
-  const handlePlus = useCallback(() => {
-    setScale(scale * 1.25);
-  }, [scale]);
-
-  const handleMinus = useCallback(() => {
-    setScale(Math.max(scale * 0.75, startScale));
-  }, [scale, startScale]);
-
   const handleScale = useCallback(
-    (plus: boolean) => {
-      plus ? setScale(scale * 1.05) : setScale(Math.max(scale * 0.96, startScale));
+    (multiplier: number, cursorCenterOffsetX: number, cursorCenterOffsetY: number) => {
+      setOffsetX(x => x * multiplier - (cursorCenterOffsetX * multiplier - cursorCenterOffsetX));
+      setOffsetY(y => y * multiplier - (cursorCenterOffsetY * multiplier - cursorCenterOffsetY));
+      setScale(Math.max(scale * multiplier, startScale));
     },
     [setScale, scale, startScale],
   );
+
+  const handlePlus = useCallback(() => {
+    handleScale(1.25, 0, 0);
+  }, [scale]);
+
+  const handleMinus = useCallback(() => {
+    handleScale(0.75, 0, 0);
+  }, [scale, startScale]);
 
   const handleFit = useCallback(() => {
     setScale(startScale);

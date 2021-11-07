@@ -9,7 +9,7 @@ interface AreaProps {
   offsetY: number;
   onInit: (scale: number, width: number, height: number) => void;
   onMove?: (x: number, y: number) => void;
-  onScale?: (plus: boolean) => void;
+  onScale?: (multiplier: number, cursorCenterOffsetX: number, cursorCenterOffsetY: number) => void;
 }
 
 export const Area = ({
@@ -74,7 +74,7 @@ export const Area = ({
     delay(turnOnTransition, 100);
 
     if (e.ctrlKey) {
-      return onScale?.(e.deltaY < 0);
+      return onScale?.(e.deltaY < 0 ? 1.05 : 0.96, e.x - screenWidth / 2, e.y - screenHeight / 2);
     }
 
     onMove?.(minMax(-e.deltaX, minX - offsetX, maxX - offsetX), minMax(-e.deltaY, minY - offsetY, maxY - offsetY));
