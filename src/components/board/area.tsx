@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 
-import { delay, minMax } from 'avrora';
+import { delay } from '@/fn';
+import { minMax } from '@/smart';
 
 interface AreaProps {
   scale: number;
@@ -76,10 +77,7 @@ export const Area = ({
       return onScale?.(e.deltaY < 0);
     }
 
-    onMove?.(
-      minMax(-e.deltaX, minX - offsetX, maxX - offsetX),
-      minMax(-e.deltaY, minY - offsetY, maxY - offsetY),
-    );
+    onMove?.(minMax(-e.deltaX, minX - offsetX, maxX - offsetX), minMax(-e.deltaY, minY - offsetY, maxY - offsetY));
   };
 
   const turnOnTransition = useCallback(() => {
