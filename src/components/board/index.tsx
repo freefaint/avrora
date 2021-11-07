@@ -122,6 +122,7 @@ export const Board = ({ title, fitOnCursorPositionWhenZoom, children }: React.Pr
         position: 'relative',
         display: 'flex',
         flexGrow: 1,
+        height: '100%',
         backgroundColor: '#f2f6fa',
       }}
     >
