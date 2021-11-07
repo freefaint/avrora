@@ -74,13 +74,13 @@ export const Area = ({
     setMoving(true);
 
     delay(turnOnTransition, 100);
-    
+
     if (zoom) {
       return onScale?.(Math.pow(1.002, e.deltaY), e.x - screenWidth / 2, e.y - screenHeight / 2);
     }
 
     if (e.ctrlKey) {
-      return onScale?.(Math.pow(1.004, - e.deltaY), e.x - screenWidth / 2, e.y - screenHeight / 2);
+      return onScale?.(Math.pow(1.004, -e.deltaY), e.x - screenWidth / 2, e.y - screenHeight / 2);
     }
 
     onMove?.(minMax(-e.deltaX, minX - offsetX, maxX - offsetX), minMax(-e.deltaY, minY - offsetY, maxY - offsetY));

@@ -43,8 +43,14 @@ export const Board = ({ title, fitOnCursorPositionWhenZoom, children }: React.Pr
 
   const handleScale = useCallback(
     (multiplier: number, cursorCenterOffsetX: number, cursorCenterOffsetY: number) => {
-      setOffsetX(x => x * multiplier - (fitOnCursorPositionWhenZoom ? cursorCenterOffsetX * multiplier - cursorCenterOffsetX : 0));
-      setOffsetY(y => y * multiplier - (fitOnCursorPositionWhenZoom ? cursorCenterOffsetY * multiplier - cursorCenterOffsetY : 0));
+      setOffsetX(
+        (x) =>
+          x * multiplier - (fitOnCursorPositionWhenZoom ? cursorCenterOffsetX * multiplier - cursorCenterOffsetX : 0),
+      );
+      setOffsetY(
+        (y) =>
+          y * multiplier - (fitOnCursorPositionWhenZoom ? cursorCenterOffsetY * multiplier - cursorCenterOffsetY : 0),
+      );
       setScale(Math.max(scale * multiplier, startScale));
     },
     [setScale, scale, startScale],
@@ -140,7 +146,7 @@ export const Board = ({ title, fitOnCursorPositionWhenZoom, children }: React.Pr
           handlePlus,
           handleOriginal,
           handleToggleMap: () => setMap((bool) => !bool),
-          handleToggleZoom: () => setZoom(bool => !bool),
+          handleToggleZoom: () => setZoom((bool) => !bool),
         })}
       </div>
 
