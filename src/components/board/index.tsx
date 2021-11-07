@@ -3,7 +3,7 @@ import { minMax } from '@/smart';
 
 import { Area } from '@/components/board/area';
 
-interface BoardOperations {
+export interface BoardOperations {
   percent: string;
   minScale: boolean;
   map: boolean;
