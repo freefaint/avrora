@@ -128,7 +128,6 @@ export const Board = ({ title, fitOnCursorPositionWhenZoom, children }: React.Pr
     >
       <div
         style={{
-          position: 'fixed',
           boxSizing: 'border-box',
           padding: '1rem',
           display: 'flex',
