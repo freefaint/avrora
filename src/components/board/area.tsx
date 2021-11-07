@@ -4,6 +4,7 @@ import { delay } from '@/fn';
 import { minMax } from '@/smart';
 
 interface AreaProps {
+  zoom: boolean;
   scale: number;
   offsetX: number;
   offsetY: number;
@@ -14,6 +15,7 @@ interface AreaProps {
 
 export const Area = ({
   children,
+  zoom,
   scale,
   offsetX,
   offsetY,
@@ -72,9 +74,13 @@ export const Area = ({
     setMoving(true);
 
     delay(turnOnTransition, 100);
+    
+    if (zoom) {
+      return onScale?.(Math.pow(1.002, e.deltaY), e.x - screenWidth / 2, e.y - screenHeight / 2);
+    }
 
     if (e.ctrlKey) {
-      return onScale?.(e.deltaY < 0 ? 1.05 : 0.96, e.x - screenWidth / 2, e.y - screenHeight / 2);
+      return onScale?.(Math.pow(1.004, - e.deltaY), e.x - screenWidth / 2, e.y - screenHeight / 2);
     }
 
     onMove?.(minMax(-e.deltaX, minX - offsetX, maxX - offsetX), minMax(-e.deltaY, minY - offsetY, maxY - offsetY));
@@ -106,7 +112,7 @@ export const Area = ({
       document.removeEventListener('mouseup', handleMouseUp);
       document.removeEventListener('mousemove', handleMouseMove);
     };
-  }, [scale, offsetX, offsetY, dragged]);
+  }, [scale, offsetX, offsetY, dragged, zoom]);
 
   useEffect(() => {
     if (contentRef.current && screenRef.current) {
@@ -139,7 +145,7 @@ export const Area = ({
         flexGrow: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        cursor: moving ? 'grabbing' : 'grab',
+        cursor: zoom ? 'zoom-in' : moving ? 'grabbing' : 'grab',
       }}
     >
       <div

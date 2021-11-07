@@ -7,18 +7,22 @@ interface BoardOperations {
   percent: string;
   minScale: boolean;
   map: boolean;
+  zoom: boolean;
   handlePlus: () => void;
   handleMinus: () => void;
   handleFit: () => void;
   handleOriginal: () => void;
   handleToggleMap: () => void;
+  handleToggleZoom: () => void;
 }
 
 export interface BoardProps {
+  fitOnCursorPositionWhenZoom?: boolean;
   title?: (operations: BoardOperations) => React.ReactNode;
 }
 
-export const Board = ({ title, children }: React.PropsWithChildren<BoardProps>) => {
+export const Board = ({ title, fitOnCursorPositionWhenZoom, children }: React.PropsWithChildren<BoardProps>) => {
+  const [zoom, setZoom] = useState(false);
   const [map, setMap] = useState(true);
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
@@ -39,8 +43,8 @@ export const Board = ({ title, children }: React.PropsWithChildren<BoardProps>) 
 
   const handleScale = useCallback(
     (multiplier: number, cursorCenterOffsetX: number, cursorCenterOffsetY: number) => {
-      setOffsetX(x => x * multiplier - (cursorCenterOffsetX * multiplier - cursorCenterOffsetX));
-      setOffsetY(y => y * multiplier - (cursorCenterOffsetY * multiplier - cursorCenterOffsetY));
+      setOffsetX(x => x * multiplier - (fitOnCursorPositionWhenZoom ? cursorCenterOffsetX * multiplier - cursorCenterOffsetX : 0));
+      setOffsetY(y => y * multiplier - (fitOnCursorPositionWhenZoom ? cursorCenterOffsetY * multiplier - cursorCenterOffsetY : 0));
       setScale(Math.max(scale * multiplier, startScale));
     },
     [setScale, scale, startScale],
@@ -129,12 +133,14 @@ export const Board = ({ title, children }: React.PropsWithChildren<BoardProps>) 
         {title?.({
           percent: `${Math.ceil(scale * 100)} %`,
           map,
+          zoom,
           minScale: scale === startScale,
           handleFit,
           handleMinus,
           handlePlus,
           handleOriginal,
           handleToggleMap: () => setMap((bool) => !bool),
+          handleToggleZoom: () => setZoom(bool => !bool),
         })}
       </div>
 
@@ -170,6 +176,7 @@ export const Board = ({ title, children }: React.PropsWithChildren<BoardProps>) 
       )}
 
       <Area
+        zoom={zoom}
         scale={scale}
         offsetX={offsetX}
         offsetY={offsetY}
