@@ -8,12 +8,14 @@ export interface BoardOperations {
   minScale: boolean;
   map: boolean;
   zoom: boolean;
+  drag: boolean;
   handlePlus: () => void;
   handleMinus: () => void;
   handleFit: () => void;
   handleOriginal: () => void;
   handleToggleMap: () => void;
   handleToggleZoom: () => void;
+  handleToggleDrag: () => void;
 }
 
 export interface BoardProps {
@@ -23,6 +25,7 @@ export interface BoardProps {
 
 export const Board = ({ title, fitOnCursorPositionWhenZoom, children }: React.PropsWithChildren<BoardProps>) => {
   const [zoom, setZoom] = useState(false);
+  const [drag, setDrag] = useState(false);
   const [map, setMap] = useState(true);
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
@@ -141,6 +144,7 @@ export const Board = ({ title, fitOnCursorPositionWhenZoom, children }: React.Pr
           percent: `${Math.ceil(scale * 100)} %`,
           map,
           zoom,
+          drag,
           minScale: scale === startScale,
           handleFit,
           handleMinus,
@@ -148,6 +152,7 @@ export const Board = ({ title, fitOnCursorPositionWhenZoom, children }: React.Pr
           handleOriginal,
           handleToggleMap: () => setMap((bool) => !bool),
           handleToggleZoom: () => setZoom((bool) => !bool),
+          handleToggleDrag: () => setDrag((bool) => !bool),
         })}
       </div>
 
@@ -184,6 +189,7 @@ export const Board = ({ title, fitOnCursorPositionWhenZoom, children }: React.Pr
 
       <Area
         zoom={zoom}
+        drag={drag}
         scale={scale}
         offsetX={offsetX}
         offsetY={offsetY}

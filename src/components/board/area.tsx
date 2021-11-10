@@ -5,6 +5,7 @@ import { minMax } from '@/smart';
 
 interface AreaProps {
   zoom: boolean;
+  drag: boolean;
   scale: number;
   offsetX: number;
   offsetY: number;
@@ -16,6 +17,7 @@ interface AreaProps {
 export const Area = ({
   children,
   zoom,
+  drag,
   scale,
   offsetX,
   offsetY,
@@ -145,7 +147,7 @@ export const Area = ({
         flexGrow: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        cursor: zoom ? 'zoom-in' : moving ? 'grabbing' : 'grab',
+        cursor: zoom ? 'zoom-in' : moving ? !drag ? 'default' : 'grabbing' : 'grab',
       }}
     >
       <div
