@@ -53,7 +53,7 @@ export const Area = ({
   );
 
   const handleMouseMove = (e: any) => {
-    if (dragged) {
+    if (dragged && drag) {
       onMove?.(
         minMax(e.movementX, minX - offsetX, maxX - offsetX),
         minMax(e.movementY, minY - offsetY, maxY - offsetY),
@@ -77,11 +77,15 @@ export const Area = ({
 
     delay(turnOnTransition, 100);
 
-    if (zoom) {
+    if (zoom && !e.ctrlKey) {
       return onScale?.(Math.pow(1.002, e.deltaY), e.x - screenWidth / 2, e.y - screenHeight / 2);
     }
 
     if (e.ctrlKey) {
+      if (zoom) {
+        return;
+      }
+
       return onScale?.(Math.pow(1.004, -e.deltaY), e.x - screenWidth / 2, e.y - screenHeight / 2);
     }
 
@@ -94,7 +98,7 @@ export const Area = ({
 
   useEffect(() => {
     if (contentHeight && contentWidth) {
-      onInit(Math.min(screenWidth / contentWidth, screenHeight / contentHeight), screenWidth, screenHeight);
+      onInit(Math.min(screenWidth / contentWidth, screenHeight / contentHeight, 1), screenWidth, screenHeight);
     }
   }, [screenWidth, screenHeight, contentWidth, contentHeight]);
 
@@ -147,7 +151,7 @@ export const Area = ({
         flexGrow: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        cursor: zoom ? 'zoom-in' : moving ? !drag ? 'default' : 'grabbing' : 'grab',
+        cursor: zoom ? 'zoom-in' : !drag ? 'default' : moving ? 'grabbing' : 'grab',
       }}
     >
       <div

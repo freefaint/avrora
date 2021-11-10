@@ -90,8 +90,8 @@ export const Board = ({ title, fitOnCursorPositionWhenZoom, children }: React.Pr
 
   const multiplier = useMemo(() => (startScale ?? 0) / (scale || 1), [startScale, scale]);
 
-  const blockWidth = useMemo(() => mapWidth * multiplier, [mapWidth, multiplier]);
-  const blockHeight = useMemo(() => mapHeight * multiplier, [mapHeight, multiplier]);
+  const blockWidth = useMemo(() => Math.max(mapWidth, mapWidth * multiplier), [mapWidth, multiplier]);
+  const blockHeight = useMemo(() => Math.max(mapHeight, mapHeight * multiplier), [mapHeight, multiplier]);
 
   const blockRight = useMemo(
     () => (mapWidth - blockWidth) / 2 + (offsetX / 10) * multiplier,
