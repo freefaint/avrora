@@ -8,7 +8,7 @@ export const usePropsState = <T>(initial: T) => {
   }, [initial]);
 
   useEffect(() => {
-    setValue(current => (current === initial ? current : initial));
+    setValue((current) => (current === initial ? current : initial));
   }, [initial]);
 
   return { value, set: setValue, reset };

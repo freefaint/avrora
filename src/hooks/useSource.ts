@@ -18,10 +18,10 @@ export const useSource = <T>(
     setError(undefined);
 
     source()
-      .then(resp => {
-        setData(resp)
+      .then((resp) => {
+        setData(resp);
       })
-      .catch(resp => setError(resp))
+      .catch((resp) => setError(resp))
       .finally(() => setLoading(false));
   }, [source, setData, setLoading]);
 
