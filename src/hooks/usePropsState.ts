@@ -1,11 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export const usePropsState = <T>(initial: T) => {
   const [value, setValue] = useState<T>(initial);
 
-  useEffect(() => {
-    setValue((current) => (current === initial ? current : initial));
+  const reset = useCallback(() => {
+    setValue(initial);
   }, [initial]);
 
-  return { value, setValue };
+  useEffect(() => {
+    setValue(current => (current === initial ? current : initial));
+  }, [initial]);
+
+  return { value, set: setValue, reset };
 };
