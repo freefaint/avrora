@@ -8,6 +8,7 @@ export const useSource = <T>(
   loading: boolean;
   error?: any;
   fetch: () => void;
+  clearError: () => void;
 } => {
   const [data, setData] = useState<T>();
   const [error, setError] = useState<any>();
@@ -28,5 +29,5 @@ export const useSource = <T>(
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(fetch, deps);
 
-  return { data, loading, error, fetch };
+  return { data, loading, error, fetch, clearError: () => setError(undefined) };
 };
