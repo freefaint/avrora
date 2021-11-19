@@ -1,4 +1,4 @@
-const waiters: Array<() => void> = [];
+const waiters: Array<() => void | string> = [];
 const timers: number[] = [];
 const DEFAULT = 1000;
 
@@ -12,8 +12,8 @@ const place = <T>(item: T, list: T[]) => {
   return list.push(item) - 1;
 };
 
-export const delay = (fn: (...params: any) => void, time: number = DEFAULT, params?: any[]) => {
-  const i = place(fn, waiters);
+export const delay = (fn: (...params: any) => void, time: number = DEFAULT, params?: any[], name?: string) => {
+  const i = place(name ?? fn, waiters);
 
   if (timers[i]) {
     clearTimeout(timers[i]);
@@ -22,7 +22,7 @@ export const delay = (fn: (...params: any) => void, time: number = DEFAULT, para
   timers[i] = window.setTimeout(params ? () => fn(...params) : fn, time !== undefined ? time : DEFAULT);
 };
 
-export const cancel = (fn: () => void) => {
+export const cancel = (fn: () => void | string) => {
   const i = waiters.indexOf(fn);
 
   if (i !== -1) {

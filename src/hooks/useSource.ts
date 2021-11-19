@@ -17,12 +17,11 @@ export const useSource = <T>(
   const fetch = useCallback(() => {
     setLoading(true);
     setError(undefined);
+    setData(undefined)
 
     source()
-      .then((resp) => {
-        setData(resp);
-      })
-      .catch((resp) => setError(resp))
+      .then(resp => setData(resp))
+      .catch(resp => setError(resp))
       .finally(() => setLoading(false));
   }, [source, setData, setLoading]);
 
