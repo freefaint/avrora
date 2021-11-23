@@ -1,29 +1,22 @@
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useState, useMemo, FC } from 'react';
 import { minMax } from '@/smart';
 
 import { Area } from '@/components/board/area';
 
-export interface BoardOperations {
-  percent: string;
-  minScale: boolean;
-  map: boolean;
-  zoom: boolean;
-  drag: boolean;
-  handlePlus: () => void;
-  handleMinus: () => void;
-  handleFit: () => void;
-  handleOriginal: () => void;
-  handleToggleMap: () => void;
-  handleToggleZoom: () => void;
-  handleToggleDrag: () => void;
-}
+import { BoardContext } from './context';
 
 export interface BoardProps {
   fitOnCursorPositionWhenZoom?: boolean;
-  title?: (operations: BoardOperations) => React.ReactNode;
+  Toolbar?: FC;
+  mapNode?: React.ReactNode;
 }
 
-export const Board = ({ title, fitOnCursorPositionWhenZoom, children }: React.PropsWithChildren<BoardProps>) => {
+export const Board = ({
+  Toolbar,
+  fitOnCursorPositionWhenZoom,
+  mapNode,
+  children,
+}: React.PropsWithChildren<BoardProps>) => {
   const [zoom, setZoom] = useState(false);
   const [drag, setDrag] = useState(false);
   const [map, setMap] = useState(true);
@@ -90,8 +83,8 @@ export const Board = ({ title, fitOnCursorPositionWhenZoom, children }: React.Pr
 
   const multiplier = useMemo(() => (startScale ?? 0) / (scale || 1), [startScale, scale]);
 
-  const blockWidth = useMemo(() => Math.max(mapWidth, mapWidth * multiplier), [mapWidth, multiplier]);
-  const blockHeight = useMemo(() => Math.max(mapHeight, mapHeight * multiplier), [mapHeight, multiplier]);
+  const blockWidth = useMemo(() => mapWidth * multiplier, [mapWidth, multiplier]);
+  const blockHeight = useMemo(() => mapHeight * multiplier, [mapHeight, multiplier]);
 
   const blockRight = useMemo(
     () => (mapWidth - blockWidth) / 2 + (offsetX / 10) * multiplier,
@@ -120,85 +113,111 @@ export const Board = ({ title, fitOnCursorPositionWhenZoom, children }: React.Pr
   );
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-        height: '100%',
-        backgroundColor: '#f2f6fa',
+    <BoardContext.Provider
+      value={{
+        percent: `${Math.ceil(scale * 100)} %`,
+        map,
+        zoom,
+        drag,
+        minScale: scale === startScale,
+        handleFit,
+        handleMinus,
+        handlePlus,
+        handleOriginal,
+        handleToggleMap: () => setMap((bool) => !bool),
+        handleToggleZoom: () => setZoom((bool) => !bool),
+        handleToggleDrag: () => setDrag((bool) => !bool),
       }}
     >
       <div
         style={{
-          boxSizing: 'border-box',
-          position: 'absolute',
+          position: 'relative',
           display: 'flex',
-          width: '100%',
-          zIndex: 1,
-          justifyContent: 'space-between',
+          flexDirection: 'column',
+          flexGrow: 1,
+          height: '100%',
+          backgroundColor: '#f2f6fa',
         }}
       >
-        {title?.({
-          percent: `${Math.ceil(scale * 100)} %`,
-          map,
-          zoom,
-          drag,
-          minScale: scale === startScale,
-          handleFit,
-          handleMinus,
-          handlePlus,
-          handleOriginal,
-          handleToggleMap: () => setMap((bool) => !bool),
-          handleToggleZoom: () => setZoom((bool) => !bool),
-          handleToggleDrag: () => setDrag((bool) => !bool),
-        })}
-      </div>
-
-      {map && (
-        <div
-          style={{
-            position: 'fixed',
-            right: '16px',
-            bottom: '16px',
-            zIndex: 1,
-            width: `${width / 10}px`,
-            height: `${height / 10}px`,
-            border: '1px solid rgba(0,0,0,0.16)',
-            background: 'rgba(0,0,0,0.04)',
-          }}
-          onClick={handleMap}
-        >
+        {Toolbar && (
           <div
             style={{
-              pointerEvents: 'none',
-              position: 'fixed',
-              transition: 'all 200ms ease-out',
-              right: `${16 + blockRight}px`,
-              bottom: `${16 + blockBottom}px`,
+              boxSizing: 'border-box',
+              position: 'absolute',
+              display: 'flex',
+              width: '100%',
               zIndex: 1,
-              width: `${blockWidth}px`,
-              height: `${blockHeight}px`,
-              border: '1px solid rgba(0,0,160,0.16)',
-              background: 'rgba(0,0,160,0.08)',
+              justifyContent: 'space-between',
             }}
-          ></div>
-        </div>
-      )}
+          >
+            <Toolbar />
+          </div>
+        )}
 
-      <Area
-        zoom={zoom}
-        drag={drag}
-        scale={scale}
-        offsetX={offsetX}
-        offsetY={offsetY}
-        onScale={handleScale}
-        onInit={handleInit}
-        onMove={handleMove}
-      >
-        {children}
-      </Area>
-    </div>
+        {map && (
+          <div
+            style={{
+              position: 'fixed',
+              right: '16px',
+              bottom: '16px',
+              zIndex: 1,
+              width: `${mapWidth}px`,
+              height: `${mapHeight}px`,
+              border: '1px solid rgba(0,0,0,0.16)',
+              background: 'rgba(0,0,0,0.04)',
+            }}
+            onClick={handleMap}
+          >
+            <div
+              style={{
+                pointerEvents: 'none',
+                position: 'fixed',
+                transition: 'all 200ms ease-out',
+                right: `${16 + blockRight}px`,
+                bottom: `${16 + blockBottom}px`,
+                zIndex: 1,
+                width: `${blockWidth}px`,
+                height: `${blockHeight}px`,
+                border: '1px solid rgba(0,0,160,0.16)',
+                background: 'rgba(0,0,160,0.08)',
+              }}
+            />
+
+            <div
+              style={{
+                pointerEvents: 'none',
+                position: 'fixed',
+                zIndex: 1,
+                width: 0,
+                height: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                right: `${16 + mapWidth / 2}px`,
+                bottom: `${16 + mapHeight / 2}px`,
+                opacity: 0.5,
+                transform: `scale(${startScale / 10})`,
+              }}
+            >
+              {mapNode ?? children}
+            </div>
+          </div>
+        )}
+
+        <Area
+          zoom={zoom}
+          drag={drag}
+          scale={scale}
+          offsetX={offsetX}
+          offsetY={offsetY}
+          onScale={handleScale}
+          onInit={handleInit}
+          onMove={handleMove}
+        >
+          {children}
+        </Area>
+      </div>
+    </BoardContext.Provider>
   );
 };
