@@ -1,11 +1,14 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 
+import html2canvas from 'html2canvas';
+
 import { delay } from '@/fn';
 import { minMax } from '@/smart';
 
 interface AreaProps {
   zoom: boolean;
   drag: boolean;
+  cache?: boolean;
   scale: number;
   offsetX: number;
   offsetY: number;
@@ -17,6 +20,7 @@ interface AreaProps {
 export const Area = ({
   children,
   zoom,
+  cache,
   drag,
   scale,
   offsetX,
@@ -25,8 +29,13 @@ export const Area = ({
   onInit,
   onMove,
 }: React.PropsWithChildren<AreaProps>) => {
+  const [cacheImg, setCacheImg] = useState<string | null>(null);
+
   const [moving, setMoving] = useState(false);
   const [dragged, setDragged] = useState(false);
+
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
 
   const screenRef = useRef<HTMLDivElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -128,6 +137,31 @@ export const Area = ({
 
         setScreenWidth(screenRef.current!.clientWidth);
         setScreenHeight(screenRef.current!.clientHeight);
+
+        if (cache) {
+          const clone = document.createElement('div');
+
+          const width = contentRef.current!.scrollWidth * 2;
+          const height = contentRef.current!.scrollHeight * 2;
+
+          clone.style.minWidth = width + 'px';
+          clone.style.minHeight = height + 'px';
+
+          setWidth(width);
+          setHeight(height);
+
+          clone.innerHTML = contentRef.current!.innerHTML;
+
+          document.body.appendChild(clone);
+
+          html2canvas(clone).then((canvas) => {
+            const data = canvas.toDataURL();
+
+            setCacheImg(data);
+
+            document.body.removeChild(clone);
+          });
+        }
       }, 100);
     }
   }, [contentRef, screenRef]);
@@ -154,12 +188,30 @@ export const Area = ({
         cursor: zoom ? 'zoom-in' : !drag ? 'default' : moving ? 'grabbing' : 'grab',
       }}
     >
+      {cache && cacheImg && (
+        <div
+          ref={contentRef}
+          style={{
+            width: 0,
+            height: 0,
+            display: moving ? 'flex' : 'none',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: !moving ? 'all 200ms ease-out' : 'none',
+            transform: `translate(${offsetX ?? 0}px, ${offsetY ?? 0}px) scale(${scale ?? 1})`,
+          }}
+        >
+          <img style={{ width, height }} src={cacheImg} />
+        </div>
+      )}
+
       <div
         ref={contentRef}
         style={{
           width: 0,
           height: 0,
-          display: 'flex',
+          display: cache && cacheImg && moving ? 'none' : 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',

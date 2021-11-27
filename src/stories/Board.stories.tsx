@@ -17,6 +17,7 @@ Default.args = {
 
     return <>{ctx?.percent}</>;
   },
+  cache: true,
   mapNode: <div style={{ width: '5000px', minHeight: '5000px', backgroundColor: 'rgba(100, 0, 0, 0.2)' }}>Text</div>,
   fitOnCursorPositionWhenZoom: true,
   children: <div style={{ width: '5000px', minHeight: '5000px', backgroundColor: 'rgba(100, 0, 0, 0.2)' }}>Text</div>,
