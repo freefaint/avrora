@@ -144,6 +144,8 @@ export const Area = ({
           const width = contentRef.current!.scrollWidth * 2;
           const height = contentRef.current!.scrollHeight * 2;
 
+          clone.style.display = 'none';
+
           clone.style.minWidth = width + 'px';
           clone.style.minHeight = height + 'px';
 
@@ -154,13 +156,17 @@ export const Area = ({
 
           document.body.appendChild(clone);
 
-          html2canvas(clone).then((canvas) => {
-            const data = canvas.toDataURL();
+          setTimeout(() => {
+            clone.style.display = 'block';
+            html2canvas(clone, { allowTaint: true, useCORS: true, backgroundColor: "rgba(0,0,0,0)", removeContainer: true, x: 0, y: 0, width, height }).then((canvas) => {
+              const data = canvas.toDataURL();
+              clone.style.display = 'none';
+              
+              setCacheImg(data);
 
-            setCacheImg(data);
-
-            document.body.removeChild(clone);
-          });
+              document.body.removeChild(clone);
+            });
+          }, 500);
         }
       }, 100);
     }
