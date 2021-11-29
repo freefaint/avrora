@@ -10,6 +10,14 @@ export default {
 
 const Template: ComponentStory<typeof Board> = (args) => <Board {...args} />;
 
+const abs = (
+  <div style={{ width: '8000px', display: 'flex', flexWrap: 'wrap' }}>
+    {new Array(3200).fill(true).map((i) => (
+      <div style={{ width: '200px', border: '1px solid #ccc', borderRadius: '10px', margin: '8px' }}>123</div>
+    ))}
+  </div>
+);
+
 export const Default = Template.bind({});
 Default.args = {
   Toolbar: () => {
@@ -17,8 +25,8 @@ Default.args = {
 
     return <>{ctx?.percent}</>;
   },
-  cache: true,
-  mapNode: <div style={{ width: '5000px', minHeight: '5000px', backgroundColor: 'rgba(100, 0, 0, 0.2)' }}>Text</div>,
+  useScreenshotWhileMoving: true,
+  // mapNode: abs,
   fitOnCursorPositionWhenZoom: true,
-  children: <div style={{ width: '5000px', minHeight: '5000px', backgroundColor: 'rgba(100, 0, 0, 0.2)' }}>Text</div>,
+  children: abs,
 };

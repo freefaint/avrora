@@ -63,10 +63,11 @@ export const Area = ({
 
   const handleMouseMove = (e: any) => {
     if (dragged && drag) {
-      onMove?.(
-        minMax(e.movementX, minX - offsetX, maxX - offsetX),
-        minMax(e.movementY, minY - offsetY, maxY - offsetY),
-      );
+      const { movementX, movementY } = e;
+
+      requestAnimationFrame(() => {
+        onMove?.(minMax(movementX, minX - offsetX, maxX - offsetX), minMax(movementY, minY - offsetY, maxY - offsetY));
+      });
     }
   };
 
@@ -82,23 +83,28 @@ export const Area = ({
 
   const handleWheel = (e: WheelEvent) => {
     e.preventDefault();
-    setMoving(true);
 
-    delay(turnOnTransition, 100);
+    const { x, y, deltaX, deltaY, ctrlKey } = e;
 
-    if (zoom && !e.ctrlKey) {
-      return onScale?.(Math.pow(1.002, e.deltaY), e.x - screenWidth / 2, e.y - screenHeight / 2);
-    }
+    requestAnimationFrame(() => {
+      setMoving(true);
 
-    if (e.ctrlKey) {
-      if (zoom) {
-        return;
+      delay(turnOnTransition, 100);
+
+      if (zoom && !ctrlKey) {
+        return onScale?.(Math.pow(1.002, deltaY), x - screenWidth / 2, y - screenHeight / 2);
       }
 
-      return onScale?.(Math.pow(1.004, -e.deltaY), e.x - screenWidth / 2, e.y - screenHeight / 2);
-    }
+      if (ctrlKey) {
+        if (zoom) {
+          return;
+        }
 
-    onMove?.(minMax(-e.deltaX, minX - offsetX, maxX - offsetX), minMax(-e.deltaY, minY - offsetY, maxY - offsetY));
+        return onScale?.(Math.pow(1.004, -deltaY), x - screenWidth / 2, y - screenHeight / 2);
+      }
+
+      onMove?.(minMax(-deltaX, minX - offsetX, maxX - offsetX), minMax(-deltaY, minY - offsetY, maxY - offsetY));
+    });
   };
 
   const turnOnTransition = useCallback(() => {
@@ -132,19 +138,11 @@ export const Area = ({
   useEffect(() => {
     if (contentRef.current && screenRef.current) {
       setTimeout(() => {
-        setContentWidth(contentRef.current!.scrollWidth * 2.5);
-        setContentHeight(contentRef.current!.scrollHeight * 2.5);
-
-        setScreenWidth(screenRef.current!.clientWidth);
-        setScreenHeight(screenRef.current!.clientHeight);
-
         if (cache) {
           const clone = document.createElement('div');
 
           const width = contentRef.current!.scrollWidth * 2;
           const height = contentRef.current!.scrollHeight * 2;
-
-          clone.style.display = 'none';
 
           clone.style.minWidth = width + 'px';
           clone.style.minHeight = height + 'px';
@@ -154,19 +152,32 @@ export const Area = ({
 
           clone.innerHTML = contentRef.current!.innerHTML;
 
-          document.body.appendChild(clone);
+          screenRef.current!.appendChild(clone);
 
-          setTimeout(() => {
-            clone.style.display = 'block';
-            html2canvas(clone, { allowTaint: true, useCORS: true, backgroundColor: "rgba(0,0,0,0)", removeContainer: true, x: 0, y: 0, width, height }).then((canvas) => {
-              const data = canvas.toDataURL();
-              clone.style.display = 'none';
-              
-              setCacheImg(data);
+          html2canvas(clone, {
+            backgroundColor: 'transparent',
+            allowTaint: true,
+            useCORS: true,
+          }).then((canvas) => {
+            const data = canvas.toDataURL();
 
-              document.body.removeChild(clone);
-            });
-          }, 500);
+            setCacheImg(data);
+
+            screenRef.current!.removeChild(clone);
+            screenRef.current!.style.opacity = '1';
+
+            setContentWidth(contentRef.current!.scrollWidth * 2.5);
+            setContentHeight(contentRef.current!.scrollHeight * 2.5);
+
+            setScreenWidth(screenRef.current!.clientWidth);
+            setScreenHeight(screenRef.current!.clientHeight);
+          });
+        } else {
+          setContentWidth(contentRef.current!.scrollWidth * 2.5);
+          setContentHeight(contentRef.current!.scrollHeight * 2.5);
+
+          setScreenWidth(screenRef.current!.clientWidth);
+          setScreenHeight(screenRef.current!.clientHeight);
         }
       }, 100);
     }
@@ -186,6 +197,7 @@ export const Area = ({
       ref={screenRef}
       style={{
         overflow: 'hidden',
+        opacity: cache ? 0 : 1,
         flexDirection: 'column',
         display: 'flex',
         flexGrow: 1,
@@ -196,10 +208,11 @@ export const Area = ({
     >
       {cache && cacheImg && (
         <div
-          ref={contentRef}
           style={{
             width: 0,
+            maxWidth: 0,
             height: 0,
+            maxHeight: 0,
             display: moving ? 'flex' : 'none',
             flexDirection: 'column',
             alignItems: 'center',
@@ -216,7 +229,9 @@ export const Area = ({
         ref={contentRef}
         style={{
           width: 0,
+          maxWidth: 0,
           height: 0,
+          maxHeight: 0,
           display: cache && cacheImg && moving ? 'none' : 'flex',
           flexDirection: 'column',
           alignItems: 'center',

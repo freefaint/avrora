@@ -7,7 +7,7 @@ import { BoardContext } from './context';
 
 export interface BoardProps {
   fitOnCursorPositionWhenZoom?: boolean;
-  cache?: boolean;
+  useScreenshotWhileMoving?: boolean;
   Toolbar?: FC;
   mapNode?: React.ReactNode;
 }
@@ -15,7 +15,7 @@ export interface BoardProps {
 export const Board = ({
   Toolbar,
   fitOnCursorPositionWhenZoom,
-  cache,
+  useScreenshotWhileMoving,
   mapNode,
   children,
 }: React.PropsWithChildren<BoardProps>) => {
@@ -24,7 +24,7 @@ export const Board = ({
   const [map, setMap] = useState(true);
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
-  const [scale, setScale] = useState(0);
+  const [scale, setScale] = useState(1);
   const [startScale, setStartScale] = useState(0);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
@@ -208,7 +208,7 @@ export const Board = ({
         )}
 
         <Area
-          cache={cache}
+          cache={useScreenshotWhileMoving}
           zoom={zoom}
           drag={drag}
           scale={scale}
