@@ -6,6 +6,7 @@ import { delay } from '@/fn';
 import { minMax } from '@/smart';
 
 interface AreaProps {
+  Loader?: React.ReactNode;
   zoom: boolean;
   drag: boolean;
   cache?: boolean;
@@ -18,6 +19,7 @@ interface AreaProps {
 }
 
 export const Area = ({
+  Loader,
   children,
   zoom,
   cache,
@@ -30,6 +32,7 @@ export const Area = ({
   onMove,
 }: React.PropsWithChildren<AreaProps>) => {
   const [cacheImg, setCacheImg] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const [moving, setMoving] = useState(false);
   const [dragged, setDragged] = useState(false);
@@ -77,8 +80,10 @@ export const Area = ({
   };
 
   const handleMouseDown = () => {
-    setMoving(true);
-    setDragged(true);
+    if (drag) {
+      setMoving(true);
+      setDragged(true);
+    }
   };
 
   const handleWheel = (e: WheelEvent) => {
@@ -166,6 +171,8 @@ export const Area = ({
             screenRef.current!.removeChild(clone);
             screenRef.current!.style.opacity = '1';
 
+            setLoading(false);
+
             setContentWidth(contentRef.current!.scrollWidth * 2.5);
             setContentHeight(contentRef.current!.scrollHeight * 2.5);
 
@@ -173,6 +180,8 @@ export const Area = ({
             setScreenHeight(screenRef.current!.clientHeight);
           });
         } else {
+          setLoading(false);
+
           setContentWidth(contentRef.current!.scrollWidth * 2.5);
           setContentHeight(contentRef.current!.scrollHeight * 2.5);
 
@@ -206,13 +215,11 @@ export const Area = ({
         cursor: zoom ? 'zoom-in' : !drag ? 'default' : moving ? 'grabbing' : 'grab',
       }}
     >
-      {cache && cacheImg && (
+      {!loading && cache && cacheImg && (
         <div
           style={{
             width: 0,
-            maxWidth: 0,
             height: 0,
-            maxHeight: 0,
             display: moving ? 'flex' : 'none',
             flexDirection: 'column',
             alignItems: 'center',
@@ -225,23 +232,38 @@ export const Area = ({
         </div>
       )}
 
-      <div
-        ref={contentRef}
-        style={{
-          width: 0,
-          maxWidth: 0,
-          height: 0,
-          maxHeight: 0,
-          display: cache && cacheImg && moving ? 'none' : 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          transition: !moving ? 'all 200ms ease-out' : 'none',
-          transform: `translate(${offsetX ?? 0}px, ${offsetY ?? 0}px) scale(${scale ?? 1})`,
-        }}
-      >
-        {children}
-      </div>
+      {loading && Loader && (
+        <div
+          style={{
+            width: 0,
+            height: 0,
+            display: cache && cacheImg && moving ? 'none' : 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {Loader}
+        </div>
+      )}
+
+      {(!loading || !Loader) && (
+        <div
+          ref={contentRef}
+          style={{
+            width: 0,
+            height: 0,
+            display: cache && cacheImg && moving ? 'none' : 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: !moving ? 'all 200ms ease-out' : 'none',
+            transform: `translate(${offsetX ?? 0}px, ${offsetY ?? 0}px) scale(${scale ?? 1})`,
+          }}
+        >
+          {children}
+        </div>
+      )}
     </div>
   );
 };
