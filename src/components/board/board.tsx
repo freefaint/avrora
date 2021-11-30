@@ -9,11 +9,13 @@ export interface BoardProps {
   fitOnCursorPositionWhenZoom?: boolean;
   useScreenshotWhileMoving?: boolean;
   Toolbar?: FC;
+  Loader?: React.ReactNode;
   mapNode?: React.ReactNode;
 }
 
 export const Board = ({
   Toolbar,
+  Loader,
   fitOnCursorPositionWhenZoom,
   useScreenshotWhileMoving,
   mapNode,
@@ -24,7 +26,7 @@ export const Board = ({
   const [map, setMap] = useState(true);
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
-  const [scale, setScale] = useState(1);
+  const [scale, setScale] = useState(0);
   const [startScale, setStartScale] = useState(0);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
@@ -209,6 +211,7 @@ export const Board = ({
 
         <Area
           cache={useScreenshotWhileMoving}
+          Loader={Loader}
           zoom={zoom}
           drag={drag}
           scale={scale}
