@@ -17,7 +17,7 @@ export const useSource = <T>(
   const fetch = useCallback(() => {
     setLoading(true);
     setError(undefined);
-    setData(undefined);
+    // setData(undefined);
 
     source()
       .then((resp) => setData(resp))
