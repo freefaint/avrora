@@ -7,8 +7,8 @@ function reducer(state: { seconds: number; running: boolean }, action: { type: '
   return { seconds, running };
 }
 
-export const useTimeout = (initSeconds?: number) => {
-  const [state, dispatch] = useReducer(reducer, { seconds: initSeconds ?? 0, running: !!initSeconds });
+export const useTimeout = (initSeconds: number = 0, lazy?: boolean) => {
+  const [state, dispatch] = useReducer(reducer, { seconds: initSeconds ?? 0, running: !!initSeconds && !lazy });
 
   const reset = useCallback(
     (resetSeconds?: number) => {

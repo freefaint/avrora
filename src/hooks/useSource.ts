@@ -24,7 +24,7 @@ export const useSource = <T>(
       .then((resp) => setData(resp))
       .catch((resp) => setError(resp))
       .finally(() => setLoading(false));
-  }, [source, setData, setLoading]);
+  }, [source]);
 
   const clear = useCallback(() => setData(undefined), []);
 
