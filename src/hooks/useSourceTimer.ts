@@ -18,16 +18,16 @@ export const useSourceTimer = <T>(
   const { seconds, reset } = useTimeout(timeout, true);
 
   useEffect(() => {
-    if (data.data && condition(data.data)) {
+    if (data.data && condition(data.data) && timeout) {
       reset();
     }
   }, [data.data]);
 
   useEffect(() => {
-    if (!seconds) {
+    if (!seconds && timeout) {
       data.fetch();
     }
-  }, [seconds, data.fetch]);
+  }, [seconds]);
 
   return data;
 };
