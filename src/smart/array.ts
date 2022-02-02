@@ -13,7 +13,7 @@ export const repeats = <T>(arr: T[]) => {
     const last = total[total.length - 1];
 
     if (!last || last.value !== i) {
-      total.push({ value: i, repeats: 0 });
+      total.push({ value: i, repeats: 1 });
     } else {
       last.repeats++;
     }
