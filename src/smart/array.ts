@@ -6,10 +6,18 @@ export const unique = <T>(arr: T[]) => {
   return collection;
 };
 
-export const repeats = <T extends string>(arr: T[]) => {
-  const total: Record<string, number> = {};
+export const repeats = <T>(arr: T[]) => {
+  const total: { value: T; repeats: number }[] = [];
 
-  arr.forEach((i) => (total[i] = total[i] !== undefined ? total[i] + 1 : 0));
+  arr.forEach((i) => {
+    const last = total[total.length - 1];
+
+    if (!last || last.value !== i) {
+      total.push({ value: i, repeats: 0 });
+    } else {
+      last.repeats++;
+    }
+  });
 
   return total;
 };
