@@ -16,7 +16,7 @@ export const useRequest = <T>({ query, lazy }: IProps<T>) => {
   }, []);
 
   const fetch = useCallback(
-    (...args) => {
+    (...args: any[]) => {
       clear();
       setLoading(true);
 
