@@ -48,7 +48,7 @@ export type GridSortModel = GridSortItem[];
 export interface RegistryProps<T> {
   id?: string;
   action?: string;
-  navigate: (href: string) => void;
+  onOpenItem: (id: string) => void;
   service: Service<T>;
 
   filterConfig?: Record<
@@ -135,7 +135,7 @@ export const RegistryProvider = <T,>({
   action,
   service: { getItem, getList, removeItem, postItem, patchItem },
   filterConfig = {},
-  navigate,
+  onOpenItem,
 }: PropsWithChildren<RegistryProps<T>>) => {
   const variants = useMemo(() => [10, 50, 100], []);
   const paginationSettingsContext = useMemo(() => ({ count: variants[0], variants }), [variants]);
@@ -214,7 +214,7 @@ export const RegistryProvider = <T,>({
       return promise
         .then((item) => {
           // @ts-ignore // TODO: check types
-          navigate(`/registry/${tableName}/item/${item.id}`);
+          onOpenItem(item.id);
           return item;
         })
         .catch((e) => {
@@ -222,7 +222,7 @@ export const RegistryProvider = <T,>({
           void 0;
         });
     },
-    [id],
+    [id, onOpenItem],
   );
 
   const dataContext = useMemo(
