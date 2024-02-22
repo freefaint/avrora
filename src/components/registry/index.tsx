@@ -24,21 +24,6 @@ export interface Service<T> {
   removeItem: (props: { id: string | number }) => Promise<void>;
 }
 
-export type OpenAPIField = {
-  nullable: boolean;
-  type: 'string' | 'integer';
-  maxLength?: 50;
-  enum?: string[];
-  format?: 'date-time'; // | "date"
-};
-
-export type Schema = {
-  properties: Record<string, OpenAPIField>;
-  required: string[];
-  primary_key?: string;
-  type: 'object';
-};
-
 export type GridRowId = string | number;
 
 export type GridRowSelectionModel = GridRowId[];
@@ -65,7 +50,6 @@ export interface RegistryProps<T> {
   action?: string;
   navigate: (href: string) => void;
   service: Service<T>;
-  schema: RegistrySchemaBody;
 
   filterConfig?: Record<
     string,
@@ -119,23 +103,6 @@ export interface RegistryCurrentContextBody<T> {
   setCurrent: Dispatch<SetStateAction<T>>;
 }
 
-export interface RegistrySchemaBody {
-  complexForeignKeys?: {
-    literals?: string[];
-    paramName?: string;
-  };
-
-  schema: Schema;
-
-  foreignKeys?: Record<
-    string,
-    {
-      foreign_key_column: string;
-      foreign_key_table: string;
-    }
-  >;
-}
-
 export const RegistryDataContext = createContext<RegistryDataContextBody<any>>({
   save: () => Promise.resolve(void 0),
   remove: () => Promise.resolve(void 0),
@@ -157,10 +124,6 @@ export const RegistrySortContext = createContext<RegistrySortContextBody>({
   onSortModelChange: () => void 0,
 });
 
-export const SchemaContext = createContext<RegistrySchemaBody>({
-  schema: { properties: {}, type: 'object', required: [] },
-});
-
 export const CurrentContext = createContext<RegistryCurrentContextBody<any>>({
   current: void 0,
   setCurrent: () => void 0,
@@ -171,7 +134,6 @@ export const RegistryProvider = <T,>({
   id,
   action,
   service: { getItem, getList, removeItem, postItem, patchItem },
-  schema: { schema, complexForeignKeys, foreignKeys },
   filterConfig = {},
   navigate,
 }: PropsWithChildren<RegistryProps<T>>) => {
@@ -282,35 +244,24 @@ export const RegistryProvider = <T,>({
 
   const propsContext = useMemo(() => ({ id }), [id]);
 
-  const schemaContext = useMemo(
-    () => ({
-      foreignKeys: foreignKeys ?? {},
-      schema: schema ?? { properties: {}, required: [], type: 'object' },
-      complexForeignKeys: complexForeignKeys ?? {},
-    }),
-    [foreignKeys, schema, complexForeignKeys],
-  );
-
   const currentContext = useMemo(() => ({ current, setCurrent }), [current, setCurrent]);
 
   return (
     <RegistryPaginationSettingsContext.Provider value={paginationSettingsContext}>
       <RegistryPropsContext.Provider value={propsContext}>
-        <SchemaContext.Provider value={schemaContext}>
-          <RegistryDataContext.Provider value={dataContext}>
-            <CurrentContext.Provider value={currentContext}>
-              <RegistryFiltersContext.Provider value={registryFiltersContext}>
-                <RegistryPaginationContext.Provider value={paginationContext}>
-                  <RegistrySortContext.Provider value={registrySortContext}>
-                    <RegistrySelectionContext.Provider value={registrySelectionContext}>
-                      {children}
-                    </RegistrySelectionContext.Provider>
-                  </RegistrySortContext.Provider>
-                </RegistryPaginationContext.Provider>
-              </RegistryFiltersContext.Provider>
-            </CurrentContext.Provider>
-          </RegistryDataContext.Provider>
-        </SchemaContext.Provider>
+        <RegistryDataContext.Provider value={dataContext}>
+          <CurrentContext.Provider value={currentContext}>
+            <RegistryFiltersContext.Provider value={registryFiltersContext}>
+              <RegistryPaginationContext.Provider value={paginationContext}>
+                <RegistrySortContext.Provider value={registrySortContext}>
+                  <RegistrySelectionContext.Provider value={registrySelectionContext}>
+                    {children}
+                  </RegistrySelectionContext.Provider>
+                </RegistrySortContext.Provider>
+              </RegistryPaginationContext.Provider>
+            </RegistryFiltersContext.Provider>
+          </CurrentContext.Provider>
+        </RegistryDataContext.Provider>
       </RegistryPropsContext.Provider>
     </RegistryPaginationSettingsContext.Provider>
   );
