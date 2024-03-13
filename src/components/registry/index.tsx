@@ -134,6 +134,7 @@ export const RegistryProvider = <T,>({
   id,
   action,
   service: { getItem, getList, removeItem, postItem, patchItem },
+  service,
   filterConfig = {},
   onOpenItem,
 }: PropsWithChildren<RegistryProps<T>>) => {
@@ -189,12 +190,12 @@ export const RegistryProvider = <T,>({
         order: sortModel,
         filter: filter ?? '',
       }),
-    [paginationContext, filter, sortModel],
+    [paginationContext, filter, sortModel, getList],
   );
 
   const { data: item } = useSource(
     () => (!id ? Promise.resolve(action === 'create' ? ({} as T) : null) : getItem({ id })),
-    [id, action],
+    [id, action, getItem],
   );
 
   const [current, setCurrent] = useState<T>();
@@ -240,7 +241,7 @@ export const RegistryProvider = <T,>({
     paginationContext.setPage(1);
     onRowSelectionModelChange([]);
     setFilter('');
-  }, []);
+  }, [service]);
 
   const propsContext = useMemo(() => ({ id }), [id]);
 
