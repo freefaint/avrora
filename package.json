@@ -1,6 +1,6 @@
 {
   "name": "avrora",
-  "version": "0.0.59",
+  "version": "0.0.60",
   "main": "lib/index.js",
   "license": "MIT",
   "scripts": {

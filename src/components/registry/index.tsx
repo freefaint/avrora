@@ -146,7 +146,9 @@ export const RegistryProvider = <T,>({
     () => Object.keys(filterConfig).map((name) => ({ name, data: (filterConfig as any)[name] })),
     [filterConfig],
   );
+
   const [filterValues, setFilterValues] = useState<FilterValue[]>([]);
+
   const registryFiltersContext = useMemo(
     () => ({ filters: filterBodies, values: filterValues, onChange: setFilterValues }),
     [filterBodies, filterValues],
@@ -167,6 +169,7 @@ export const RegistryProvider = <T,>({
     const interv = setInterval(() => {
       setFilter(
         filterValues
+          .filter((i) => !!i.value || (i.value as any) === 0 || (i.value as any) === false) // TODO: check types
           .map((i) => {
             const operator = (filterConfig as any)[i.name].operator;
 
