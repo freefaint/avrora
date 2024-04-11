@@ -193,7 +193,7 @@ export const RegistryProvider = <T,>({
         order: sortModel,
         filter: filter ?? '',
       }),
-    [paginationContext, filter, sortModel, getList],
+    [paginationContext.page, paginationContext.limit, filter, sortModel, getList],
   );
 
   const { data: item } = useSource(
