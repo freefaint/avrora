@@ -6,7 +6,7 @@ export const useQueue = <T>() => {
   const [opened, setOpened] = useState(false);
 
   const push = useCallback((item: T) => {
-    setQueue(items => [...items, item]);
+    setQueue((items) => [...items, item]);
     setOpened(true);
   }, []);
 
@@ -29,7 +29,11 @@ export const useQueue = <T>() => {
     if (!current && opened) {
       setCurrent(queue[0]);
       setQueue(queue.slice(1));
+
+      return;
     }
+
+    return;
   }, [current, queue, opened]);
 
   return {

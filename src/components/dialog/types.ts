@@ -86,8 +86,7 @@ export interface DialogFormConfirmCommonProps {
   cancelText?: string;
 }
 
-export type DialogFormConfirmProps = DialogFormConfirmCommonProps &
-  (DialogConfirmProps | DialogFormProps);
+export type DialogFormConfirmProps = DialogFormConfirmCommonProps & (DialogConfirmProps | DialogFormProps);
 
 export type DialogProps = DialogCommonProps & (DialogFormConfirmProps | DialogInfoProps);
 

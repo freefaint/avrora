@@ -1,4 +1,3 @@
-
 import React, { FC, PropsWithChildren, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { DataError, DialogProps, DialogType, ErrorType, FormBody, ServerError } from './types';
 import { useQueue } from '@/hooks/useQueue';
@@ -6,11 +5,11 @@ import { useEscape } from '@/hooks/useEscape';
 import { DialogContext } from './dialog.context';
 
 interface Props {
-  Render: FC<{ onClose: () => void, text: ReactNode, title: ReactNode, form: ReactNode, submitEnabled: boolean; }>;
+  Render: FC<{ onClose: () => void; text: ReactNode; title: ReactNode; form: ReactNode; submitEnabled: boolean }>;
 }
 
 export const DialogProvider = ({ children, Render }: PropsWithChildren<Props>) => {
-  const { current, opened, push, next } = useQueue<DialogProps>();
+  const { current, push, next } = useQueue<DialogProps>();
   const [formData, setFormData] = useState<FormBody>();
   const [loading, setLoading] = useState(false);
   const [serverErrors, setServerErrors] = useState<Omit<DataError, 'condition' | 'type'>[]>([]);
@@ -41,28 +40,25 @@ export const DialogProvider = ({ children, Render }: PropsWithChildren<Props>) =
       : {};
   }, [current, formData]);
 
-  const showCancelButton = useMemo(() => {
-    if (current?.followData) {
-      return !(actualFormData?.value?.length === 0);
-    }
+  // const showCancelButton = useMemo(() => {
+  //   if (current?.followData) {
+  //     return !(actualFormData?.value?.length === 0);
+  //   }
 
-    return (
-      (current?.type === DialogType.Confirm || current?.type === DialogType.Form) &&
-      !current.hideCancel
-    );
-  }, [current, actualFormData]);
+  //   return (current?.type === DialogType.Confirm || current?.type === DialogType.Form) && !current.hideCancel;
+  // }, [current, actualFormData]);
 
   const errors = useMemo(() => {
     if (current?.type === DialogType.Form) {
       return (
         current.errors?.filter(
-          i =>
-            i.type === ErrorType.Data &&
-            i.condition(actualFormData) &&
-            Object.keys(actualFormData).includes(i.name)
+          (i) =>
+            i.type === ErrorType.Data && i.condition(actualFormData) && Object.keys(actualFormData).includes(i.name),
         ) as DataError[]
       )?.map(({ name, string }) => ({ name, string }));
     }
+
+    return;
   }, [current, actualFormData]);
 
   const handleSubmit = useCallback(() => {
@@ -85,14 +81,12 @@ export const DialogProvider = ({ children, Render }: PropsWithChildren<Props>) =
         })
         .catch(({ response }) => {
           setServerErrors(
-            (
-              current.errors?.filter(
-                i => i.type === ErrorType.Server && i.condition(response)
-              ) as ServerError[]
-            )?.map<Omit<DataError, 'condition' | 'type'>>(i => ({
+            (current.errors?.filter((i) => i.type === ErrorType.Server && i.condition(response)) as ServerError[])?.map<
+              Omit<DataError, 'condition' | 'type'>
+            >((i) => ({
               name: i.name,
               string: i.string(response),
-            }))
+            })),
           );
         })
         .finally(() => {
@@ -115,13 +109,13 @@ export const DialogProvider = ({ children, Render }: PropsWithChildren<Props>) =
             title={current?.title}
             text={current?.text}
             submitEnabled={
-              !(loading ||
-                (current?.type === DialogType.Form &&
-                  current?.submitEnabled &&
-                  !current.submitEnabled(actualFormData)))
+              !(
+                loading ||
+                (current?.type === DialogType.Form && current?.submitEnabled && !current.submitEnabled(actualFormData))
+              )
             }
             form={
-              <> 
+              <>
                 {current?.type === DialogType.Form && (
                   <current.form
                     value={actualFormData}
@@ -134,16 +128,7 @@ export const DialogProvider = ({ children, Render }: PropsWithChildren<Props>) =
           />
         </form>
       ) : null,
-    [
-      current,
-      handleClose,
-      setFormData,
-      actualFormData,
-      serverErrors,
-      errors,
-      handleSubmit,
-      handleClose,
-    ]
+    [current, handleClose, setFormData, actualFormData, serverErrors, errors, handleSubmit, handleClose],
   );
 
   return (
@@ -151,9 +136,7 @@ export const DialogProvider = ({ children, Render }: PropsWithChildren<Props>) =
       <>
         {children}
 
-        {current && current.type === DialogType.Form && (
-          {body}
-        )}
+        {current && current.type === DialogType.Form && { body }}
       </>
     </DialogContext.Provider>
   );
