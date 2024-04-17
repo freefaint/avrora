@@ -134,6 +134,11 @@ export const RegistryControlContext = createContext<{ reload: () => void; fetchL
   fetchList: () => void 0,
 });
 
+export const RegistryEditingContext = createContext<[editing: boolean, setEditing: Dispatch<SetStateAction<boolean>>]>([
+  false,
+  () => void 0,
+]);
+
 export const RegistryProvider = <T,>({
   children,
   id,
@@ -255,6 +260,13 @@ export const RegistryProvider = <T,>({
 
   const currentContext = useMemo(() => ({ current, setCurrent }), [current, setCurrent]);
   const controlContext = useMemo(() => ({ reload, fetchList }), [reload, fetchList]);
+  const editingContext = useState(false);
+
+  useEffect(() => {
+    if (id) {
+      editingContext[1](id ? action === 'create' : false);
+    }
+  }, [id]);
 
   return (
     <RegistryControlContext.Provider value={controlContext}>
@@ -262,15 +274,17 @@ export const RegistryProvider = <T,>({
         <RegistryPropsContext.Provider value={propsContext}>
           <RegistryDataContext.Provider value={dataContext}>
             <RegistryCurrentContext.Provider value={currentContext}>
-              <RegistryFiltersContext.Provider value={registryFiltersContext}>
-                <RegistryPaginationContext.Provider value={paginationContext}>
-                  <RegistrySortContext.Provider value={registrySortContext}>
-                    <RegistrySelectionContext.Provider value={registrySelectionContext}>
-                      {children}
-                    </RegistrySelectionContext.Provider>
-                  </RegistrySortContext.Provider>
-                </RegistryPaginationContext.Provider>
-              </RegistryFiltersContext.Provider>
+              <RegistryEditingContext.Provider value={editingContext}>
+                <RegistryFiltersContext.Provider value={registryFiltersContext}>
+                  <RegistryPaginationContext.Provider value={paginationContext}>
+                    <RegistrySortContext.Provider value={registrySortContext}>
+                      <RegistrySelectionContext.Provider value={registrySelectionContext}>
+                        {children}
+                      </RegistrySelectionContext.Provider>
+                    </RegistrySortContext.Provider>
+                  </RegistryPaginationContext.Provider>
+                </RegistryFiltersContext.Provider>
+              </RegistryEditingContext.Provider>
             </RegistryCurrentContext.Provider>
           </RegistryDataContext.Provider>
         </RegistryPropsContext.Provider>
