@@ -124,7 +124,7 @@ export const RegistrySortContext = createContext<RegistrySortContextBody>({
   onSortModelChange: () => void 0,
 });
 
-export const CurrentContext = createContext<RegistryCurrentContextBody<any>>({
+export const RegistryCurrentContext = createContext<RegistryCurrentContextBody<any>>({
   current: void 0,
   setCurrent: () => void 0,
 });
@@ -258,7 +258,7 @@ export const RegistryProvider = <T,>({
       <RegistryPaginationSettingsContext.Provider value={paginationSettingsContext}>
         <RegistryPropsContext.Provider value={propsContext}>
           <RegistryDataContext.Provider value={dataContext}>
-            <CurrentContext.Provider value={currentContext}>
+            <RegistryCurrentContext.Provider value={currentContext}>
               <RegistryFiltersContext.Provider value={registryFiltersContext}>
                 <RegistryPaginationContext.Provider value={paginationContext}>
                   <RegistrySortContext.Provider value={registrySortContext}>
@@ -268,7 +268,7 @@ export const RegistryProvider = <T,>({
                   </RegistrySortContext.Provider>
                 </RegistryPaginationContext.Provider>
               </RegistryFiltersContext.Provider>
-            </CurrentContext.Provider>
+            </RegistryCurrentContext.Provider>
           </RegistryDataContext.Provider>
         </RegistryPropsContext.Provider>
       </RegistryPaginationSettingsContext.Provider>
