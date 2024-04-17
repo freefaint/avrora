@@ -129,6 +129,8 @@ export const CurrentContext = createContext<RegistryCurrentContextBody<any>>({
   setCurrent: () => void 0,
 });
 
+export const RegistryControlContext = createContext<{ reload: () => void }>({ reload: () => void 0 });
+
 export const RegistryProvider = <T,>({
   children,
   id,
@@ -196,7 +198,7 @@ export const RegistryProvider = <T,>({
     [paginationContext.page, paginationContext.limit, filter, sortModel, getList],
   );
 
-  const { data: item } = useSource(
+  const { data: item, fetch: reload } = useSource(
     () => (!id ? Promise.resolve(action === 'create' ? ({} as T) : null) : getItem({ id })),
     [id, action, getItem],
   );
@@ -249,24 +251,27 @@ export const RegistryProvider = <T,>({
   const propsContext = useMemo(() => ({ id }), [id]);
 
   const currentContext = useMemo(() => ({ current, setCurrent }), [current, setCurrent]);
+  const controlContext = useMemo(() => ({ reload }), [reload]);
 
   return (
-    <RegistryPaginationSettingsContext.Provider value={paginationSettingsContext}>
-      <RegistryPropsContext.Provider value={propsContext}>
-        <RegistryDataContext.Provider value={dataContext}>
-          <CurrentContext.Provider value={currentContext}>
-            <RegistryFiltersContext.Provider value={registryFiltersContext}>
-              <RegistryPaginationContext.Provider value={paginationContext}>
-                <RegistrySortContext.Provider value={registrySortContext}>
-                  <RegistrySelectionContext.Provider value={registrySelectionContext}>
-                    {children}
-                  </RegistrySelectionContext.Provider>
-                </RegistrySortContext.Provider>
-              </RegistryPaginationContext.Provider>
-            </RegistryFiltersContext.Provider>
-          </CurrentContext.Provider>
-        </RegistryDataContext.Provider>
-      </RegistryPropsContext.Provider>
-    </RegistryPaginationSettingsContext.Provider>
+    <RegistryControlContext.Provider value={controlContext}>
+      <RegistryPaginationSettingsContext.Provider value={paginationSettingsContext}>
+        <RegistryPropsContext.Provider value={propsContext}>
+          <RegistryDataContext.Provider value={dataContext}>
+            <CurrentContext.Provider value={currentContext}>
+              <RegistryFiltersContext.Provider value={registryFiltersContext}>
+                <RegistryPaginationContext.Provider value={paginationContext}>
+                  <RegistrySortContext.Provider value={registrySortContext}>
+                    <RegistrySelectionContext.Provider value={registrySelectionContext}>
+                      {children}
+                    </RegistrySelectionContext.Provider>
+                  </RegistrySortContext.Provider>
+                </RegistryPaginationContext.Provider>
+              </RegistryFiltersContext.Provider>
+            </CurrentContext.Provider>
+          </RegistryDataContext.Provider>
+        </RegistryPropsContext.Provider>
+      </RegistryPaginationSettingsContext.Provider>
+    </RegistryControlContext.Provider>
   );
 };
