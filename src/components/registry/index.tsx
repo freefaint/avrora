@@ -129,7 +129,10 @@ export const RegistryCurrentContext = createContext<RegistryCurrentContextBody<a
   setCurrent: () => void 0,
 });
 
-export const RegistryControlContext = createContext<{ reload: () => void }>({ reload: () => void 0 });
+export const RegistryControlContext = createContext<{ reload: () => void; fetchList: () => void }>({
+  reload: () => void 0,
+  fetchList: () => void 0,
+});
 
 export const RegistryProvider = <T,>({
   children,
@@ -251,7 +254,7 @@ export const RegistryProvider = <T,>({
   const propsContext = useMemo(() => ({ id }), [id]);
 
   const currentContext = useMemo(() => ({ current, setCurrent }), [current, setCurrent]);
-  const controlContext = useMemo(() => ({ reload }), [reload]);
+  const controlContext = useMemo(() => ({ reload, fetchList }), [reload, fetchList]);
 
   return (
     <RegistryControlContext.Provider value={controlContext}>
