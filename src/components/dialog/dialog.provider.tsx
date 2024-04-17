@@ -136,7 +136,7 @@ export const DialogProvider = ({ children, Render }: PropsWithChildren<Props>) =
       <>
         {children}
 
-        {current && current.type === DialogType.Form && { body }}
+        {current && { body }}
       </>
     </DialogContext.Provider>
   );
