@@ -3,3 +3,8 @@ export * from './useRequest';
 export * from './useTimeout';
 export * from './useSource';
 export * from './useSourceTimer';
+export * from './useDelayedValue';
+export * from './useEscape';
+export * from './useHover';
+export * from './useQueue';
+export * from './useStorage';
