@@ -264,9 +264,9 @@ export const RegistryProvider = <T,>({
 
   useEffect(() => {
     if (id) {
-      editingContext[1](id ? action === 'create' : false);
+      editingContext[1](!id ? action === 'create' : false);
     }
-  }, [id]);
+  }, [id, action]);
 
   return (
     <RegistryControlContext.Provider value={controlContext}>
