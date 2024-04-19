@@ -263,10 +263,8 @@ export const RegistryProvider = <T,>({
   const editingContext = useState(false);
 
   useEffect(() => {
-    if (id) {
-      editingContext[1](!id ? action === 'create' : false);
-    }
-  }, [id, action]);
+    editingContext[1](action === 'create');
+  }, [action]);
 
   return (
     <RegistryControlContext.Provider value={controlContext}>
