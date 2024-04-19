@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FC, FormEvent, PropsWithChildren, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { DataError, DialogProps, DialogType, ErrorType, FormBody, ServerError } from './types';
 import { useQueue } from '@/hooks/useQueue';
 import { useEscape } from '@/hooks/useEscape';
@@ -61,44 +61,50 @@ export const DialogProvider = ({ children, Render }: PropsWithChildren<Props>) =
     return;
   }, [current, actualFormData]);
 
-  const handleSubmit = useCallback(() => {
-    setServerErrors([]);
+  const handleSubmit = useCallback(
+    (e: FormEvent) => {
+      e.preventDefault();
+      setServerErrors([]);
 
-    if (errors?.length) {
-      setTriedSubmit(true);
-      return;
-    }
+      if (errors?.length) {
+        setTriedSubmit(true);
+        return;
+      }
 
-    if (current?.type === DialogType.Form && current.handler) {
-      setTriedSubmit(true);
-      setLoading(true);
+      if (current?.type === DialogType.Form && current.handler) {
+        setTriedSubmit(true);
+        setLoading(true);
 
-      current
-        .handler(actualFormData)
-        .then(() => {
-          current.onSubmit?.();
-          completed();
-        })
-        .catch(({ response }) => {
-          setServerErrors(
-            (current.errors?.filter((i) => i.type === ErrorType.Server && i.condition(response)) as ServerError[])?.map<
-              Omit<DataError, 'condition' | 'type'>
-            >((i) => ({
-              name: i.name,
-              string: i.string(response),
-            })),
-          );
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    } else if (current?.type === DialogType.Confirm) {
-      current.onSubmit?.();
-      completed();
-    } else {
-      completed();
-    }
-  }, [current, actualFormData, errors]);
+        current
+          .handler(actualFormData)
+          .then(() => {
+            current.onSubmit?.();
+            completed();
+          })
+          .catch(({ response }) => {
+            setServerErrors(
+              (
+                current.errors?.filter((i) => i.type === ErrorType.Server && i.condition(response)) as ServerError[]
+              )?.map<Omit<DataError, 'condition' | 'type'>>((i) => ({
+                name: i.name,
+                string: i.string(response),
+              })),
+            );
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      } else if (current?.type === DialogType.Confirm) {
+        current.onSubmit?.();
+        completed();
+      } else {
+        completed();
+      }
+
+      return false;
+    },
+    [current, actualFormData, errors],
+  );
 
   const body = useMemo(
     () =>
