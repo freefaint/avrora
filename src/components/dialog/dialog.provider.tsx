@@ -1,4 +1,13 @@
-import React, { FC, FormEvent, PropsWithChildren, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  FC,
+  PropsWithChildren,
+  ReactNode,
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { DataError, DialogProps, DialogType, ErrorType, FormBody, ServerError } from './types';
 import { useQueue } from '@/hooks/useQueue';
 import { useEscape } from '@/hooks/useEscape';
@@ -62,7 +71,7 @@ export const DialogProvider = ({ children, Render }: PropsWithChildren<Props>) =
   }, [current, actualFormData]);
 
   const handleSubmit = useCallback(
-    (e: FormEvent) => {
+    (e: SyntheticEvent) => {
       e.preventDefault();
       setServerErrors([]);
 
