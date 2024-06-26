@@ -1,6 +1,6 @@
 {
   "name": "avrora",
-  "version": "0.0.74",
+  "version": "0.0.75",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "license": "MIT",
