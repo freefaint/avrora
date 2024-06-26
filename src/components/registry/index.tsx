@@ -66,6 +66,7 @@ export const RegistryPropsContext = createContext<{ id?: string }>({});
 
 export interface RegistryDataContextBody<T> {
   data?: T[];
+  count?: number;
   item?: T;
   pages?: number;
 
@@ -245,6 +246,7 @@ export const RegistryProvider = <T,>({
       save,
       remove,
       data: itemsData?.data,
+      count: itemsData?.count,
       pages: itemsData?.count && Math.ceil(itemsData.count / paginationContext.limit),
     }),
     [itemsData, item, save, remove],
