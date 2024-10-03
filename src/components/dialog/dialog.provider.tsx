@@ -14,7 +14,7 @@ import { useEscape } from '@/hooks/useEscape';
 import { DialogContext } from './dialog.context';
 
 interface Props {
-  Render: FC<{ onClose: () => void; text: ReactNode; title: ReactNode; form: ReactNode; submitEnabled: boolean }>;
+  Render: FC<{ onClose: () => void; loading: boolean; text: ReactNode; title: ReactNode; form: ReactNode; submitEnabled: boolean }>;
 }
 
 export const DialogProvider = ({ children, Render }: PropsWithChildren<Props>) => {
@@ -117,12 +117,13 @@ export const DialogProvider = ({ children, Render }: PropsWithChildren<Props>) =
 
   const body = useMemo(
     () =>
-      current ? (
-        <form onSubmit={handleSubmit}>
+      (
+        <form onSubmit={current && handleSubmit}>
           <Render
             onClose={handleClose}
             title={current?.title}
             text={current?.text}
+            loading={loading}
             submitEnabled={
               !(
                 loading ||
@@ -142,7 +143,7 @@ export const DialogProvider = ({ children, Render }: PropsWithChildren<Props>) =
             }
           />
         </form>
-      ) : null,
+      ),
     [current, handleClose, setFormData, actualFormData, serverErrors, errors, handleSubmit, handleClose],
   );
 
@@ -151,7 +152,7 @@ export const DialogProvider = ({ children, Render }: PropsWithChildren<Props>) =
       <>
         {children}
 
-        {current && body}
+        {body}
       </>
     </DialogContext.Provider>
   );
