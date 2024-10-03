@@ -14,7 +14,14 @@ import { useEscape } from '@/hooks/useEscape';
 import { DialogContext } from './dialog.context';
 
 interface Props {
-  Render: FC<{ onClose: () => void; loading: boolean; text: ReactNode; title: ReactNode; form: ReactNode; submitEnabled: boolean }>;
+  Render: FC<{
+    onClose: () => void;
+    loading: boolean;
+    text: ReactNode;
+    title: ReactNode;
+    form: ReactNode;
+    submitEnabled: boolean;
+  }>;
 }
 
 export const DialogProvider = ({ children, Render }: PropsWithChildren<Props>) => {
@@ -116,34 +123,33 @@ export const DialogProvider = ({ children, Render }: PropsWithChildren<Props>) =
   );
 
   const body = useMemo(
-    () =>
-      (
-        <form onSubmit={current && handleSubmit}>
-          <Render
-            onClose={handleClose}
-            title={current?.title}
-            text={current?.text}
-            loading={loading}
-            submitEnabled={
-              !(
-                loading ||
-                (current?.type === DialogType.Form && current?.submitEnabled && !current.submitEnabled(actualFormData))
-              )
-            }
-            form={
-              <>
-                {current?.type === DialogType.Form && (
-                  <current.form
-                    value={actualFormData}
-                    onChange={setFormData}
-                    errors={serverErrors.length ? serverErrors : triedSubmit ? errors : undefined}
-                  />
-                )}
-              </>
-            }
-          />
-        </form>
-      ),
+    () => (
+      <form onSubmit={current && handleSubmit}>
+        <Render
+          onClose={handleClose}
+          title={current?.title}
+          text={current?.text}
+          loading={loading}
+          submitEnabled={
+            !(
+              loading ||
+              (current?.type === DialogType.Form && current?.submitEnabled && !current.submitEnabled(actualFormData))
+            )
+          }
+          form={
+            <>
+              {current?.type === DialogType.Form && (
+                <current.form
+                  value={actualFormData}
+                  onChange={setFormData}
+                  errors={serverErrors.length ? serverErrors : triedSubmit ? errors : undefined}
+                />
+              )}
+            </>
+          }
+        />
+      </form>
+    ),
     [current, handleClose, setFormData, actualFormData, serverErrors, errors, handleSubmit, handleClose],
   );
 
