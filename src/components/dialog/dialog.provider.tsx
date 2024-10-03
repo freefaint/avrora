@@ -15,6 +15,7 @@ import { DialogContext } from './dialog.context';
 
 interface Props {
   Render: FC<{
+    open: boolean;
     onClose: () => void;
     loading: boolean;
     text: ReactNode;
@@ -126,6 +127,7 @@ export const DialogProvider = ({ children, Render }: PropsWithChildren<Props>) =
     () => (
       <form onSubmit={current && handleSubmit}>
         <Render
+          open={!!current}
           onClose={handleClose}
           title={current?.title}
           text={current?.text}
@@ -150,7 +152,19 @@ export const DialogProvider = ({ children, Render }: PropsWithChildren<Props>) =
         />
       </form>
     ),
-    [current, handleClose, setFormData, actualFormData, serverErrors, errors, handleSubmit, handleClose],
+    [
+      current,
+      handleClose,
+      setFormData,
+      loading,
+      ,
+      triedSubmit,
+      actualFormData,
+      serverErrors,
+      errors,
+      handleSubmit,
+      handleClose,
+    ],
   );
 
   return (
