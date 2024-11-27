@@ -105,7 +105,7 @@ export const DialogProvider = ({ children, Render }: PropsWithChildren<Props>) =
               )?.map<Omit<DataError, 'condition' | 'type'>>((i) => ({
                 name: i.name,
                 string: i.string(response),
-              })),
+              })) ?? [],
             );
           })
           .finally(() => {
