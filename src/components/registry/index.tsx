@@ -71,7 +71,7 @@ export interface RegistryDataContextBody<T> {
   pages?: number;
 
   save: (item: T) => Promise<T>;
-  remove: () => Promise<any>;
+  remove: (id?: string | number) => Promise<any>;
 }
 
 export interface FilterBody {
@@ -218,9 +218,12 @@ export const RegistryProvider = <T,>({
     setCurrent(item as T);
   }, [item]);
 
-  const remove = useCallback(() => {
-    return Promise.all(selectionModel.map((i) => removeItem({ id: i }))).then(fetchList);
-  }, [selectionModel, fetchList]);
+  const remove = useCallback(
+    (id?: number | string) => {
+      return Promise.all(id ? [id] : selectionModel.map((i) => removeItem({ id: i }))).then(fetchList);
+    },
+    [selectionModel, fetchList],
+  );
 
   const save = useCallback(
     (item: T) => {
