@@ -22,6 +22,7 @@ interface Props {
     title: ReactNode;
     form: ReactNode;
     submitEnabled: boolean;
+    type?: DialogType;
   }>;
 }
 
@@ -132,6 +133,7 @@ export const DialogProvider = ({ children, Render }: PropsWithChildren<Props>) =
           title={current?.title}
           text={current?.text}
           loading={loading}
+          type={current?.type}
           submitEnabled={
             !(
               loading ||
