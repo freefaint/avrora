@@ -220,7 +220,7 @@ export const RegistryProvider = <T,>({
 
   const remove = useCallback(
     (id?: number | string) => {
-      return Promise.all(id ? [id] : selectionModel.map((i) => removeItem({ id: i }))).then(fetchList);
+      return Promise.all((id ? [id] : selectionModel).map((i) => removeItem({ id: i }))).then(fetchList);
     },
     [selectionModel, fetchList],
   );
