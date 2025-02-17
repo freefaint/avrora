@@ -15,9 +15,9 @@ export const useStorage = <T>(name: string, val?: T): [T, Dispatch<SetStateActio
 
   const [value, setValue] = useState<T>(get() ?? val);
 
-  const set: Dispatch<SetStateAction<T>> = useCallback(val => {
+  const set: Dispatch<SetStateAction<T>> = useCallback((val) => {
     if (val instanceof Function) {
-      setValue(old => {
+      setValue((old) => {
         const newVal = val(old);
         localStorage.setItem(name, JSON.stringify(newVal));
         return newVal;
