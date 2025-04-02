@@ -17,6 +17,7 @@ export interface Service<T> {
     pagination: { top: number; skip: number };
     order: GridSortModel;
     filter?: string;
+    filterValues?: any
   }) => Promise<{ count: number; data: T[] }>;
   postItem: (props: { item: T }) => Promise<T>;
   patchItem: (props: { id: string | number; item: T }) => Promise<T>;
@@ -203,6 +204,7 @@ export const RegistryProvider = <T,>({
         pagination: { skip: (paginationContext.page - 1) * paginationContext.limit, top: paginationContext.limit },
         order: sortModel,
         filter: filter ?? '',
+        filterValues
       }),
     [paginationContext.page, paginationContext.limit, filter, sortModel, getList],
   );
