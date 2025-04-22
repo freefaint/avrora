@@ -17,7 +17,7 @@ export interface Service<T> {
     pagination: { top: number; skip: number };
     order: GridSortModel;
     filter?: string;
-    filterValues?: any
+    filterValues?: any;
   }) => Promise<{ count: number; data: T[] }>;
   postItem: (props: { item: T }) => Promise<T>;
   patchItem: (props: { id: string | number; item: T }) => Promise<T>;
@@ -204,7 +204,7 @@ export const RegistryProvider = <T,>({
         pagination: { skip: (paginationContext.page - 1) * paginationContext.limit, top: paginationContext.limit },
         order: sortModel,
         filter: filter ?? '',
-        filterValues
+        filterValues,
       }),
     [paginationContext.page, paginationContext.limit, filter, sortModel, getList],
   );
@@ -231,16 +231,11 @@ export const RegistryProvider = <T,>({
     (item: T) => {
       const promise = !id ? postItem({ item }) : patchItem({ id, item });
 
-      return promise
-        .then((item) => {
-          // @ts-ignore // TODO: check types
-          onOpenItem(item.id);
-          return item;
-        })
-        .catch((e) => {
-          console.error(e);
-          void 0;
-        });
+      return promise.then((item) => {
+        // @ts-ignore // TODO: check types
+        onOpenItem(item.id);
+        return item;
+      });
     },
     [id, onOpenItem],
   );
