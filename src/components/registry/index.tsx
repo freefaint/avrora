@@ -183,12 +183,24 @@ export const RegistryProvider = <T,>({
         filterValues
           .filter((i) => !!i.value || (i.value as any) === 0 || (i.value as any) === false) // TODO: check types
           .map((i) => {
-            const operator = (filterConfig as any)[i.name].operator;
+            const operator = (filterConfig as any)?.[i.name]?.operator;
+
+            if (!operator) {
+              return '';
+            }
 
             return operator === 'contains'
               ? `contains(${i.name}, '${i.value}')`
+              : operator === 'between'
+              ? [
+                  i.value?.[0] && `${(filterConfig as any)[i.name]?.filterName ?? i.name} gt '${i.value[0]}'`,
+                  i.value?.[1] && `${(filterConfig as any)[i.name]?.filterName ?? i.name} lt '${i.value[1]}'`,
+                ]
+                  .filter(Boolean)
+                  .join(' and ')
               : `${(filterConfig as any)[i.name]?.filterName ?? i.name} ${operator} '${i.value}'`;
           })
+          .filter(Boolean)
           .join(' and '),
       );
     }, 500);
