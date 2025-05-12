@@ -52,6 +52,8 @@ export interface RegistryProps<T> {
   onOpenItem: (id: string) => void;
   service: Service<T>;
 
+  sort?: GridSortModel;
+
   filterConfig?: Record<
     string,
     {
@@ -147,6 +149,7 @@ export const RegistryProvider = <T,>({
   action,
   service: { getItem, getList, removeItem, postItem, patchItem },
   service,
+  sort,
   filterConfig = {},
   onOpenItem,
 }: PropsWithChildren<RegistryProps<T>>) => {
@@ -166,8 +169,12 @@ export const RegistryProvider = <T,>({
     [filterBodies, filterValues],
   );
 
-  const [sortModel, onSortModelChange] = useState<GridSortModel>([]);
+  const [sortModel, onSortModelChange] = useState<GridSortModel>(sort ?? []);
   const registrySortContext = useMemo(() => ({ sortModel, onSortModelChange }), [sortModel, onSortModelChange]);
+
+  useEffect(() => {
+    onSortModelChange(sortModel);
+  }, [sortModel]);
 
   const [selectionModel, onRowSelectionModelChange] = useState<GridRowSelectionModel>([]);
   const registrySelectionContext = useMemo(
