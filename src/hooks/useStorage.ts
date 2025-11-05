@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 
-export const useStorage = <T>(name: string, val?: T): [T, Dispatch<SetStateAction<T>>] => {
+export const useStorage = <T>(name: string, val?: T, reinit?: boolean): [T, Dispatch<SetStateAction<T>>] => {
   const get = useCallback(() => {
     let val;
 
@@ -13,7 +13,7 @@ export const useStorage = <T>(name: string, val?: T): [T, Dispatch<SetStateActio
     return val;
   }, []);
 
-  const [value, setValue] = useState<T>(get() ?? val);
+  const [value, setValue] = useState<T>(reinit ? val : get() ?? val);
 
   const set: Dispatch<SetStateAction<T>> = useCallback((val) => {
     if (val instanceof Function) {
@@ -27,6 +27,12 @@ export const useStorage = <T>(name: string, val?: T): [T, Dispatch<SetStateActio
       setValue(val);
     }
   }, []);
+
+  // useEffect(() => {
+  //   if (val) {
+  //     set(val);
+  //   }
+  // }, [val]);
 
   return [value, set];
 };
