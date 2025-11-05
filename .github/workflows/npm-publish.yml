@@ -42,6 +42,8 @@ jobs:
             echo "bumped=false" >> "$GITHUB_OUTPUT"
           fi
   build:
+    needs: guard
+    if: needs.guard.outputs.bumped == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -52,6 +54,7 @@ jobs:
 
   publish-npm:
     needs: build
+    if: needs.guard.outputs.bumped == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
