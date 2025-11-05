@@ -1,0 +1,69 @@
+# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
+# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
+
+name: npmjs publish
+
+on:
+  push:
+    branches: [dev]
+    paths:
+      - package.json
+
+jobs:
+  guard:
+    name: Detect version bump
+    runs-on: ubuntu-latest
+    outputs:
+      bumped: ${{ steps.check.outputs.bumped }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # нужно, чтобы был доступен HEAD^
+
+      - id: check
+        name: Check if version increased
+        run: |
+          set -e
+          CUR=$(jq -r '.version' package.json)
+
+          # Достаём предыдущий package.json, если он есть
+          if git rev-parse HEAD^ >/dev/null 2>&1 && git show HEAD^:package.json >/tmp/prev.json 2>/dev/null; then
+            PREV=$(jq -r '.version' /tmp/prev.json)
+          else
+            PREV="0.0.0"
+          fi
+
+          echo "Current: $CUR  Previous: $PREV"
+
+          # Проверяем семантическое увеличение версии
+          if npx -y semver -r ">$PREV" "$CUR" >/dev/null 2>&1; then
+            echo "bumped=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "bumped=false" >> "$GITHUB_OUTPUT"
+          fi
+  build:
+    needs: guard
+    if: needs.guard.outputs.bumped == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+
+  publish-npm:
+    needs: build
+    if: needs.guard.outputs.bumped == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+      - run: npm ci
+      - run: npm build
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
