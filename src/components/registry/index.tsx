@@ -164,9 +164,11 @@ export const RegistryProvider = <T,>({
 
   const [filterValues, setFilterValues] = useState<FilterValue[]>([]);
 
+  const [filter, setFilter] = useState('');
+
   const registryFiltersContext = useMemo(
-    () => ({ filters: filterBodies, values: filterValues, onChange: setFilterValues }),
-    [filterBodies, filterValues],
+    () => ({ filters: filterBodies, values: filterValues, filter, onChange: setFilterValues }),
+    [filterBodies, filterValues, filter],
   );
 
   const [sortModel, onSortModelChange] = useState<GridSortModel>(sort ?? []);
@@ -181,8 +183,6 @@ export const RegistryProvider = <T,>({
     () => ({ selectionModel, onRowSelectionModelChange }),
     [selectionModel, onRowSelectionModelChange],
   );
-
-  const [filter, setFilter] = useState('');
 
   useEffect(() => {
     const interv = setInterval(() => {
