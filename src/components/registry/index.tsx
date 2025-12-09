@@ -87,6 +87,7 @@ export interface FilterValue {
 }
 
 export interface RegistryFiltersContextBody {
+  filter: string;
   filters: FilterBody[];
   values: FilterValue[];
   onChange: Dispatch<SetStateAction<FilterValue[]>>;
@@ -113,6 +114,7 @@ export const RegistryDataContext = createContext<RegistryDataContextBody<any>>({
 });
 
 export const RegistryFiltersContext = createContext<RegistryFiltersContextBody>({
+  filter: '',
   filters: [],
   values: [],
   onChange: () => void 0,
