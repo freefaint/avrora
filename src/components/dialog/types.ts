@@ -1,3 +1,5 @@
+import { FC } from "react";
+
 export type Controlled<T> = {
   value: T;
   onChange: (value: T) => void;
@@ -45,7 +47,7 @@ interface ILinl {
 export interface DialogCommonProps {
   link?: ILinl;
   title?: React.ReactNode;
-  text?: React.ReactNode;
+  text?: FC<{ onClose: () => void }> | React.ReactNode;
   img?: React.ReactNode;
   type: DialogType;
   confirmText?: string;

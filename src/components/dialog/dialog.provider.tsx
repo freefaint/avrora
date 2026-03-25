@@ -131,7 +131,7 @@ export const DialogProvider = ({ children, Render }: PropsWithChildren<Props>) =
           open={!!current}
           onClose={handleClose}
           title={current?.title}
-          text={current?.text}
+          text={current?.text instanceof Function ? <current.text onClose={handleClose} /> : current?.text}
           loading={loading}
           type={current?.type}
           submitEnabled={
